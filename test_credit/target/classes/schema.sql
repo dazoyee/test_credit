@@ -18,6 +18,19 @@ CREATE TABLE creditcard_service (
   FOREIGN KEY (service_id) REFERENCES service(id)
 );
 
+ALTER TABLE creditcard_service ADD score int;
+UPDATE creditcard_service SET score = 1;
+
+CREATE TABLE creditcard_service_user (
+  creditcard_id INT,
+  service_id INT,
+/*
+  PRIMARY KEY (creditcard_id, service_id),
+  FOREIGN KEY (creditcard_id) REFERENCES creditcard_service(creditcard_id),
+  FOREIGN KEY (service_id) REFERENCES creditcard_service(service_id)
+*/
+);
+
 INSERT INTO creditcard (id, name) VALUES 
 	(01, 'Orico Card THE POINT'), (02, '楽天カード'), (03, '三井住友VISAゴールドカード'), (04, 'エポスカード'), (05, 'Yahoo! JAPANカード');
 /*
@@ -47,8 +60,6 @@ INSERT INTO creditcard_service (creditcard_id, service_id) VALUES (03, 01);
 INSERT INTO creditcard_service (creditcard_id, service_id) VALUES (04, 01);
 INSERT INTO creditcard_service (creditcard_id, service_id) VALUES (05, 01), (05, 02), (05, 04);
 
-ALTER TABLE creditcard_service ADD score int;
-UPDATE creditcard_service SET score = 1;
 -- あるクレジットカードIDに関係のあるサービス一覧を取得し、その件数を返却する。
 SELECT COUNT(*) FROM creditcard_service WHERE creditcard_id = 1;
 
@@ -93,10 +104,46 @@ GROUP BY creditcard_id;
 SELECT
 	service_id,
 	creditcard_id,
-	SQRT(SUM(score)) AS norm
-	--score / SQRT(SUM(score) OVER(PARTITION BY creditcard_id)) AS nscore
+	SQRT(SUM(score)) AS norm,
+	score / SQRT(SUM(score)) AS nscore
 FROM
 	creditcard_service
 GROUP BY creditcard_id, service_id;
+
+
+
+/*
+SELECT
+	service_id,
+	creditcard_id,
+	SQRT(SUM(score) OVER(PARTITION BY creditcard_id)) AS norm,
+	score / SQRT(SUM(score) OVER(PARTITION BY creditcard_id)) AS nscore
+FROM
+	creditcard_service;
+
+
+
+
+
+WITH
+	norm_creditcard_service AS (
+		SELECT service_id, creditcard_id,
+			score / SQRT(SUM(score) OVER(PARTITION BY creditcard_id)) AS nscore
+		FROM creditcard_service
+	)
+SELECT
+	cs1.creditcard_id AS target,
+	cs2.creditcard_id AS recommend,
+	SUM(cs1.nscore * cs2.nscore) AS score
+FROM
+	norm_creditcard_service AS cs1
+	JOIN
+		norm_creditcard_service AS cs2
+		ON cs1.service_id = cs2.service_id
+	GROUP BY
+		cs1.creditcard_id, cs2.creditcard_id; */
+
+
+
 
 
