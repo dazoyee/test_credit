@@ -1,7 +1,5 @@
 package sbpayment.jp.intro;
 
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
@@ -31,26 +29,31 @@ public class MainController {
 	return "test_credit_result";
 	}
 	
-	@PostMapping("/test_credit_select1")
-	public String test_credit_select1(int creditcard_id[], RedirectAttributes attr) {
-		for (int i=0; i<creditcard_id.length; i++ ) {
-//		attr.addAttribute("service_id", service_id);
-			jdbc.update("insert into creditcard_service_user (creditcard_id) values(?);", creditcard_id[i]);
-		}
-		return "redirect:/test_credit_select1";
-	}
-	
-	
 	@PostMapping("/test_credit_result")
-	public String test_credit_result(int creditcard_id[], int service_id[], RedirectAttributes attr) {
-		for (int j=0; j<creditcard_id.length; j++ ) {
-		for (int i=0; i<service_id.length; i++ ) {
-//		attr.addAttribute("service_id", service_id);
-			jdbc.update("insert into creditcard_service_user (creditcard_id,service_id) values(?,?);", creditcard_id[j],service_id[i]);
-		}}
-		return "redirect:/test_credit_result";
+	public String test_credit_result(int service_id[], RedirectAttributes attr) {
+		jdbc.update("DELETE FROM creditcard_service_user WHERE creditcard_id = 99");
+		for (int i=0; i<service_id.length; i++) {
+			jdbc.update("INSERT INTO creditcard_service_user (creditcard_id,service_id,score) values(99,?,1);", service_id[i]);
+		}
+
+/*		Map<String,Object> sum = jdbc.queryForMap("SELECT COUNT(service_id) FROM creditcard_service WHERE creditcard_id = 1");
+		double norm = Math.sqrt(Double.valueOf(sum.get("COUNT(service_id)").toString()));
+*/		
+//		List<Map<String,Object>> sums = new ArrayList<Map<String,Object>>();
+//		Map<String, Object> sum;
+//		for(int i=0; i<sums.size(); i++) {
+//			Map<String, Object> sum = sums.get(i);
+//			List<Map<String,Object>> sums = jdbc.queryForList("SELECT COUNT(service_id) FROM creditcard_service GROUP BY creditcard_id");
+//			for(Map<String, Object> sum : sums)
+//			double norm = Math.sqrt(Double.valueOf(sums.get("COUNT(service_id)").toString()));
+			
+//			System.out.println(sum);
+//		}
+//		return "redirect:/test_credit_result";
 	}
 }
+
+
 	/*
 	@GetMapping("/form")
 	public String sample(String name, int age, Model model) {
