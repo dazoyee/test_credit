@@ -1,5 +1,8 @@
 package sbpayment.jp.intro;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
@@ -36,6 +39,17 @@ public class MainController {
 			jdbc.update("INSERT INTO creditcard_service_user (creditcard_id,service_id,score) values(99,?,1);", service_id[i]);
 		}
 
+		for(int i=0; i<5; i++) {
+		Map<String,Object> sum = jdbc.queryForList("SELECT creditcard_id,COUNT(service_id) FROM creditcard_service GROUP BY creditcard_id").get(i);
+		System.out.println(sum);
+		double norm = Math.sqrt(Double.valueOf(sum.get("COUNT(service_id)").toString()));
+		System.out.println(norm);
+		double nscore = 1/norm;
+		System.out.println(nscore);
+		System.out.println();
+		
+		}
+		
 /*		Map<String,Object> sum = jdbc.queryForMap("SELECT COUNT(service_id) FROM creditcard_service WHERE creditcard_id = 1");
 		double norm = Math.sqrt(Double.valueOf(sum.get("COUNT(service_id)").toString()));
 */		
@@ -43,13 +57,13 @@ public class MainController {
 //		Map<String, Object> sum;
 //		for(int i=0; i<sums.size(); i++) {
 //			Map<String, Object> sum = sums.get(i);
-//			List<Map<String,Object>> sums = jdbc.queryForList("SELECT COUNT(service_id) FROM creditcard_service GROUP BY creditcard_id");
+	//		List<Map<String,Object>> sums = jdbc.queryForList("SELECT COUNT(service_id) FROM creditcard_service GROUP BY creditcard_id");
 //			for(Map<String, Object> sum : sums)
 //			double norm = Math.sqrt(Double.valueOf(sums.get("COUNT(service_id)").toString()));
 			
-//			System.out.println(sum);
+			
 //		}
-//		return "redirect:/test_credit_result";
+		return "redirect:/test_credit_result";
 	}
 }
 
