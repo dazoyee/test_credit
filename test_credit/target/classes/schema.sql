@@ -13,8 +13,7 @@ CREATE TABLE service (
 CREATE TABLE creditcard_service (
   creditcard_id INT,
   service_id INT,
-  score INT DEFAULT 1,
-  PRIMARY KEY (creditcard_id, service_id, score),
+  PRIMARY KEY (creditcard_id, service_id),
   FOREIGN KEY (creditcard_id) REFERENCES creditcard(id),
   FOREIGN KEY (service_id) REFERENCES service(id)
 );
@@ -22,8 +21,7 @@ CREATE TABLE creditcard_service (
 CREATE TABLE creditcard_service_user (
   creditcard_id INT,
   service_id INT,
-  score INT,
-  PRIMARY KEY (creditcard_id, service_id, score)
+  PRIMARY KEY (creditcard_id, service_id)
 /*
   FOREIGN KEY (creditcard_id) REFERENCES creditcard_service(creditcard_id),
   FOREIGN KEY (service_id) REFERENCES creditcard_service(service_id)

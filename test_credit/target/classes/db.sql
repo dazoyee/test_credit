@@ -57,25 +57,39 @@ FROM
 
 
 
-
+*/
 
 WITH
 	norm_creditcard_service AS (
-		SELECT service_id, creditcard_id,
-			score / SQRT(SUM(score) OVER(PARTITION BY creditcard_service.creditcard_id)) AS nscore
+		SELECT service_id, creditcard_id
+--			score / SQRT(SUM(score) OVER(PARTITION BY creditcard_service.creditcard_id)) AS nscore
 		FROM creditcard_service
 	)
 SELECT
 	cs1.creditcard_id AS target,
-	cs2.creditcard_id AS recommend,
-	SUM(cs1.nscore * cs2.nscore) AS score
+	cs2.creditcard_id AS recommend
+--	SUM(cs1.nscore * cs2.nscore) AS score
 FROM
 	norm_creditcard_service AS cs1
 	JOIN
 		norm_creditcard_service AS cs2
 		ON cs1.service_id = cs2.service_id
 	GROUP BY
-		cs1.creditcard_id, cs2.creditcard_id; */
+		cs1.creditcard_id, cs2.creditcard_id; 
+
+SELECT
+	cs1.creditcard_id AS target,
+	cs2.creditcard_id AS recommend
+--	SUM(cs1.nscore * cs2.nscore) AS score
+FROM
+	creditcard_service AS cs1
+	JOIN
+		creditcard_service AS cs2
+		ON cs1.service_id = cs2.service_id
+	WHERE
+		cs1.creditcard_id <> cs2.creditcard_id
+	GROUP BY
+		cs1.creditcard_id, cs2.creditcard_id; 
 
 SELECT * FROM creditcard_service
 UNION ALL
